@@ -1,9 +1,8 @@
 # Welcome to Hello City
 
-With Hello City, travellers can view and follow walking tours saved by other users when they travel.
-Users will be able to see the route to follow, and will be able to read relevant information when they arrive at the next stop.
+With Hello City, travelers can browse and follow walking tours created by other users, following mapped routes and details about each stop along the way.
 
-Users can also create and save walking tours for other users to follow.
+The app also lets users create and save their own walking tours.
 
 Built with React Native/Expo.
 
