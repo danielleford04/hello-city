@@ -1,6 +1,12 @@
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
+import {Tour} from "@/utilities/types";
 
-export default function RouteListItem({route, onPress}) {
+interface RouteListItemProps {
+    route: Tour;
+    onPress: (Tour)=>void;
+}
+
+export default function RouteListItem({route, onPress} : RouteListItemProps) {
     return (
         <TouchableOpacity
            style={styles.container}
@@ -10,7 +16,7 @@ export default function RouteListItem({route, onPress}) {
                 {route.name}
             </Text>
             <Text style={styles.description}>
-                {route.desc}
+                {route.description}
             </Text>
         </TouchableOpacity>
     );

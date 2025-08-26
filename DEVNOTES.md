@@ -1,8 +1,4 @@
 ## Todos and references:
-
-Before github:
--get google API key somewhere
-
 After github, but soon:
 -get colors in centralized doc/css variables
 -get everything ts compliant
@@ -14,6 +10,7 @@ After github, but soon:
 - tour map - make it so map doesn't keep rerendering every time we get new user coordinates. we want the maker for the user's location to keep updating though
 - tour map - error for user coord fetching
 - check all instances of getUserCoordinates
+- bug - for both tour user and tour builder - can't get back to the list if they're in the map
 
 - look this up -  userLocationUpdateInterval={5000}
 

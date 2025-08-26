@@ -6,14 +6,16 @@ import MapViewDirections from 'react-native-maps-directions';
 const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 import GooglePlacesTextInput from 'react-native-google-places-textinput';
 import SimpleForm from "@/components/SimpleForm";
+import {Coordinates, Stop} from "@/utilities/types";
+import MapCalloutContent from "@/components/MapCalloutContent";
 
 export default function TourBuilder({activeTour}) {
-    const [initialCoordinates, setInitialCoordinates] = useState()
-    const [stopsForTour, setStopsForTour] = useState([])
-    const [newStopCoords, setNewStopCoords] = useState()
-    const [displayNewStopDetailsForm, setDisplayNewStopDetailsForm] = useState(false)
-    const [waypointCoordinates, setWaypointCoordinates] = useState([])
-    const [mapHeight, setMapHeight] = useState(null)
+    const [initialCoordinates, setInitialCoordinates] = useState<Coordinates|null>(null)
+    const [stopsForTour, setStopsForTour] = useState<Stop[]>([])
+    const [newStopCoords, setNewStopCoords] = useState<Coordinates|null>(null)
+    const [displayNewStopDetailsForm, setDisplayNewStopDetailsForm] = useState<boolean>(false)
+    const [waypointCoordinates, setWaypointCoordinates] = useState<Coordinates[]>([])
+    const [mapHeight, setMapHeight] = useState<number | null>(null)
     const mapRef = useRef(null);
 
     useEffect(()=>{
@@ -48,7 +50,7 @@ export default function TourBuilder({activeTour}) {
             setInitialCoordinates({latitude: location.coords.latitude,
                 longitude: location.coords.longitude})
         }else {
-            setInitialCoordinates({latitude: '48.85', longitude: '2.35'})
+            setInitialCoordinates({latitude: 48.85, longitude: 2.35})
         }
     }
 
@@ -63,12 +65,20 @@ export default function TourBuilder({activeTour}) {
         setDisplayNewStopDetailsForm(true)
     }
 
-    function addStopToRoute(formData) {
-        setDisplayNewStopDetailsForm(false)
-        setStopsForTour([...stopsForTour, { name: formData.name, desc: formData.description, latitude: newStopCoords.latitude, longitude: newStopCoords.longitude } ])
+    function addStopToRoute(formData: {name: string, description: string}) {
+        if (newStopCoords) {
+            setDisplayNewStopDetailsForm(false)
+            setStopsForTour([...stopsForTour, {
+                name: formData.name,
+                description: formData.description,
+                id: 'randomId',
+                latitude: newStopCoords.latitude,
+                longitude: newStopCoords.longitude
+            }])
+        }
     }
 
-    const animateToNewRegion = ( latLng) => {
+    const animateToNewRegion = ( latLng : Coordinates) => {
         const newRegion = {
             latitude: latLng.latitude,
             longitude: latLng.longitude,
@@ -79,7 +89,7 @@ export default function TourBuilder({activeTour}) {
     };
     return (
        <>
-           {!displayNewStopDetailsForm && initialCoordinates &&
+           {!displayNewStopDetailsForm && initialCoordinates && mapHeight &&
                 <View style={styles.mapContainer}>
                     <Text style={styles.listTitle}>{activeTour.name}</Text>
                     <Text style={{fontSize: 16, fontFamily: "Inter", color: '#333333', textAlign: "center", marginBottom: 10}}>To add a stop, long press the location</Text>
@@ -110,10 +120,7 @@ export default function TourBuilder({activeTour}) {
                                         // onCalloutPress={()=>showLocationDetails(marker)} - TODO - function to edit stop
                                     >
                                         <Callout>
-                                            <View style={{alignItems: 'center', justifyContent: 'center',  width: 200}}>
-                                                <Text style={{fontFamily: "DMSansBold"}}>{marker.name}</Text>
-                                                <Text style={{fontFamily: "DMSans", overflow: 'hidden'}} numberOfLines={4} ellipsizeMode={"tail"}>{marker.description}</Text>
-                                            </View>
+                                            <MapCalloutContent name={marker.name} description={marker.description}/>
                                         </Callout>
                                     </Marker>
                                 ))}

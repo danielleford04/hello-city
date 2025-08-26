@@ -3,24 +3,29 @@ import { useState } from "react";
 import {denverRoute1, cbusRoute1, denverRoute2} from '@/sampleRoute';
 import RouteListItem from "@/components/RouteListItem";
 import SimpleForm from "@/components/SimpleForm";
+import {Tour} from "@/utilities/types";
 
 const defaultRoutes = [denverRoute1, cbusRoute1, denverRoute2]
 
-export default function TourBuilderHome({openMapBuilderWithSelectedTour}) {
-    const [routes, setRoutes] = useState(defaultRoutes)
-    const [displayNewTourBasicForm, setDisplayNewTourBasicForm] = useState(false)
+interface TourBuilderHomeProps {
+    openMapBuilderWithSelectedTour: (Tour)=>void;
+}
+
+export default function TourBuilderHome({openMapBuilderWithSelectedTour} : TourBuilderHomeProps) {
+    const [routes, setRoutes] = useState<Tour[] | null>(defaultRoutes)
+    const [displayNewTourBasicForm, setDisplayNewTourBasicForm] = useState<boolean>(false)
 
     return (
         <>
-                {!displayNewTourBasicForm &&
+                {!displayNewTourBasicForm && routes &&
                     <View>
-                        <View style={{justifyContent: "center", alignItems: "center"}}>
+                        <View style={styles.createButtonContainer}>
                             <TouchableOpacity style={styles.createButton} onPress={() => setDisplayNewTourBasicForm(true)}>
-                                <Text style={{fontWeight: "bold", fontSize: 18, color: '#3E436F'}}>Create New Tour</Text>
+                                <Text style={styles.createButtonText}>Create New Tour</Text>
                             </TouchableOpacity>
                         </View>
                         <Text style={styles.listTitle}>Drafts</Text>
-                        <View style={{margin: 15}}>
+                        <View style={styles.tourListContainer}>
                             {routes.map((route, index) => (
                                 <RouteListItem route={route} onPress={()=>openMapBuilderWithSelectedTour(route)} key={route.id} />
                             ))}
@@ -35,13 +40,9 @@ export default function TourBuilderHome({openMapBuilderWithSelectedTour}) {
 }
 
 const styles = StyleSheet.create({
-    listTitle: {
-        fontWeight: "bold",
-        fontSize: 24,
-        fontFamily: "DMSansBold",
-        marginBottom: 3,
-        color: '#333333',
-        textAlign: 'center'
+    createButtonContainer: {
+        justifyContent: "center",
+        alignItems: "center"
     },
     createButton: {
         borderColor: '#3E436F',
@@ -53,5 +54,21 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         paddingVertical: 15,
+    },
+    createButtonText: {
+        fontWeight: "bold",
+        fontSize: 18,
+        color: '#3E436F'
+    },
+    tourListContainer: {
+        margin: 15
+    },
+    listTitle: {
+        fontWeight: "bold",
+        fontSize: 24,
+        fontFamily: "DMSansBold",
+        marginBottom: 3,
+        color: '#333333',
+        textAlign: 'center'
     },
 });

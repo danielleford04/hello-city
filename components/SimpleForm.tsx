@@ -1,9 +1,20 @@
 import {StyleSheet, View, Text, TouchableOpacity, TextInput} from 'react-native';
 import { useState, useEffect } from "react";
 
-export default function SimpleForm({title, onSubmit, onCancel}) {
-    const [nameInputValue, setNameInputValue] = useState('');
-    const [descriptionInputValue, setDescriptionInputValue] = useState('');
+interface SimpleFormProps {
+    title: string;
+    onSubmit: (SimpleFormData)=>void;
+    onCancel: ()=>void;
+}
+
+interface SimpleFormData {
+    name: string;
+    description: string;
+}
+
+export default function SimpleForm({title, onSubmit, onCancel}:SimpleFormProps) {
+    const [nameInputValue, setNameInputValue] = useState<string>('');
+    const [descriptionInputValue, setDescriptionInputValue] = useState<string>('');
 
     const returnFormData=()=> {
         onSubmit({name: nameInputValue, description: descriptionInputValue})
@@ -37,7 +48,7 @@ export default function SimpleForm({title, onSubmit, onCancel}) {
                             placeholder="Description"
                         />
                     </View>
-                    <View style={{flexDirection: "row", justifyContent: "space-evenly"}}>
+                    <View style={styles.buttonRow}>
                         <TouchableOpacity>
                             <Text style={styles.continueButton} onPress={onCancel}>Cancel</Text>
                         </TouchableOpacity>
@@ -85,5 +96,8 @@ const styles = StyleSheet.create({
     textInput: {
         fontSize: 18,
     },
-
+    buttonRow: {
+        flexDirection: "row",
+        justifyContent: "space-evenly"
+    }
 });

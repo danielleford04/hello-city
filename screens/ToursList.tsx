@@ -4,12 +4,17 @@ import RouteListItem from "@/components/RouteListItem";
 import {cbusRoute1, denverRoute1, denverRoute2} from "@/sampleRoute";
 import {useEffect, useState} from "react";
 import {getCurrentPositionAsync, requestForegroundPermissionsAsync} from "expo-location";
+import { Coordinates, Tour } from "@/utilities/types";
 
 const defaultRoutes = [denverRoute1, cbusRoute1, denverRoute2]
 
-export default function ToursList({setSelectedRoute}) {
-    const [ coordinates, setCoordinates ] = useState()
-    const [routes, setRoutes] = useState(defaultRoutes)
+interface ToursListProps {
+    setSelectedRoute: ()=>void;
+}
+
+export default function ToursList({setSelectedRoute} : ToursListProps) {
+    const [ coordinates, setCoordinates ] = useState<Coordinates | null>(null)
+    const [routes, setRoutes] = useState<Tour[] | null>(defaultRoutes)
 
     useEffect(()=>{
         getUserCoordinates();
@@ -26,31 +31,32 @@ export default function ToursList({setSelectedRoute}) {
                 longitude: location.coords.longitude})
         }else {
             //TODO - error message - can't use app without permissions to get location
-            setCoordinates({latitude: '48.85', longitude: '2.35'})
+            setCoordinates({latitude: 48.85, longitude: 2.35})
         }
     }
 
-    const selectRoute = function(route) {
+    const selectRoute = function(route: Tour) {
         console.log("we've selected a route, time to go to the map", route)
     }
 
     return (
         <View>
             <Header title={"Hello City"} subtitle={"Self guided walking tours"} />
-            <View style={{flexDirection: "row", justifyContent: 'space-around', height: 50, alignItems: 'center'}}>
-                <TouchableOpacity style={{borderBottomWidth: 3, borderBottomColor: '#F4C542', flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center'}}>
-                    <Text style={{color: '#333333', fontFamily: "DMSansBold"}}>Nearby</Text>
+            <View style={styles.tabContainer}>
+                <TouchableOpacity style={styles.tabButton}>
+                    <Text style={styles.tabButtonText}>Nearby</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{borderBottomWidth: 1, borderBottomColor: 'lightgrey', flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center'}}>
-                    <Text style={{color: '#333333', fontFamily: "DMSansBold"}}>Saved</Text>
+                <TouchableOpacity style={styles.tabButton}>
+                    <Text style={styles.tabButtonText}>Saved</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={{borderBottomWidth: 1, borderBottomColor: 'lightgrey', flex: 1, height: '100%', alignItems: 'center', justifyContent: 'center'}}>
-                    <Text style={{color: '#333333', fontFamily: "DMSansBold"}}>Search</Text>
+                <TouchableOpacity style={styles.tabButton}>
+                    <Text style={styles.tabButtonText}>Search</Text>
                 </TouchableOpacity>
             </View>
-            <View style={{margin: 15}}>
-                {routes.map((route, index) => (
-                    <RouteListItem route={route} onPress={setSelectedRoute} key={route.id} />
+            <View style={styles.routeListContainer}>
+                {routes &&
+                    routes.map((route, index) => (
+                        <RouteListItem route={route} onPress={setSelectedRoute} key={route.id} />
                 ))}
             </View>
         </View>
@@ -58,4 +64,25 @@ export default function ToursList({setSelectedRoute}) {
 }
 
 const styles = StyleSheet.create({
+    tabContainer: {
+        flexDirection: "row",
+        justifyContent: 'space-around',
+        height: 50,
+        alignItems: 'center'
+    },
+    tabButton: {
+        borderBottomWidth: 3,
+        borderBottomColor: '#F4C542',
+        flex: 1,
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    tabButtonText: {
+        color: '#333333',
+        fontFamily: "DMSansBold"
+    },
+    routeListContainer: {
+        margin: 15
+    }
 });

@@ -7,14 +7,20 @@ import Header from "@/components/Header";
 import MapViewDirections from 'react-native-maps-directions';
 import {areTwoLocationsWithin500Feet} from "@/utilities/utilities";
 import StopInfoDisplay from "@/components/StopInfoDisplay";
+import {Coordinates, Tour, Stop} from "@/utilities/types";
+import MapCalloutContent from "@/components/MapCalloutContent";
 const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 
-export default function TourMap({selectedRoute}) {
-    const [coordinates, setCoordinates ] = useState()
-    const [activeStop, setActiveStop] = useState()
-    const [displayStopInfo, setDisplayStopInfo] = useState(false)
-    const [waypointCoordinates, setWaypointCoordinates] = useState()
-    const [stops, setStops] = useState();
+interface TourMapProps {
+    selectedRoute: Tour;
+}
+
+export default function TourMap({selectedRoute}:TourMapProps) {
+    const [coordinates, setCoordinates ] = useState<Coordinates|null>(null)
+    const [activeStop, setActiveStop] = useState<Stop | null>(null)
+    const [displayStopInfo, setDisplayStopInfo] = useState<boolean>(false)
+    const [waypointCoordinates, setWaypointCoordinates] = useState<Coordinates[] | null>(null)
+    const [stops, setStops] = useState<Stop[]|null>(null);
 
     useEffect(() => {
         getUserCoordinates();
@@ -35,7 +41,7 @@ export default function TourMap({selectedRoute}) {
     },[coordinates])
 
     useEffect(()=>{
-        const waypointCoords = [];
+        const waypointCoords: Coordinates[] = [];
         for (let i=1; i<selectedRoute.stops.length-2; i++) {
             waypointCoords.push({latitude: selectedRoute.stops[i].latitude, longitude: selectedRoute.stops[i].longitude})
         }
@@ -44,13 +50,18 @@ export default function TourMap({selectedRoute}) {
     },[selectedRoute])
 
     function checkLocationProximityToNewStops() {
-        for (let i=0; i<stops.length; i++) {
-            if (areTwoLocationsWithin500Feet(coordinates, {latitude: +stops[i].latitude, longitude: +stops[i].longitude}) && stops[i].visited === false){
-                showLocationDetails(stops[i])
-                const stopsArrayCopy = stops;
-                stopsArrayCopy[i].visited = true;
-                setStops(stopsArrayCopy)
-                // TODO: this will be done differently if stored in BE
+        if (stops && coordinates) {
+            for (let i = 0; i < stops.length; i++) {
+                if (areTwoLocationsWithin500Feet(coordinates, {
+                    latitude: +stops[i].latitude,
+                    longitude: +stops[i].longitude
+                }) && stops[i].visited === false) {
+                    showLocationDetails(stops[i])
+                    const stopsArrayCopy = stops;
+                    stopsArrayCopy[i].visited = true;
+                    setStops(stopsArrayCopy)
+                    // TODO: this will be done differently if stored in BE
+                }
             }
         }
     }
@@ -68,7 +79,7 @@ export default function TourMap({selectedRoute}) {
                 longitude: location.coords.longitude})
         }else {
             //TODO - error message, "please go to settings and allow to share"
-            setCoordinates({latitude: '48.85', longitude: '2.35'})
+            setCoordinates({latitude: 48.85, longitude: 2.35})
         }
     }
 
@@ -79,7 +90,7 @@ export default function TourMap({selectedRoute}) {
                     <Header title={selectedRoute.name}/>
                 }
                 <View style={{marginBottom: 60, flex: 1, alignItems: 'center'}}>
-                    {displayStopInfo &&
+                    {displayStopInfo && activeStop &&
                         <StopInfoDisplay stop={activeStop} closeDisplayFunction={()=>setDisplayStopInfo(false)}/>
                     }
                     {!displayStopInfo && coordinates &&
@@ -107,10 +118,7 @@ export default function TourMap({selectedRoute}) {
                                         onCalloutPress={()=>showLocationDetails(marker)}
                                     >
                                         <Callout>
-                                            <View style={{alignItems: 'center', justifyContent: 'center',  width: 200}}>
-                                                <Text style={{fontFamily: "DMSansBold"}}>{marker.name}</Text>
-                                                <Text style={{fontFamily: "DMSans", overflow: 'hidden'}} numberOfLines={4} ellipsizeMode={"tail"}>{marker.description}</Text>
-                                            </View>
+                                            <MapCalloutContent name={marker.name} description={marker.description}/>
                                         </Callout>
                                     </Marker>
                                 ))}

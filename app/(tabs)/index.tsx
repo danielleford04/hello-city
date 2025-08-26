@@ -3,9 +3,10 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useState} from "react";
 import ToursList from "@/screens/ToursList";
 import TourMap from "@/screens/TourMap";
+import {Tour} from "@/utilities/types";
 
 export default function HomeScreen() {
-    const [selectedRoute, setSelectedRoute] = useState(null)
+    const [selectedRoute, setSelectedRoute] = useState<Tour | null>(null)
 
     const selectRoute = function(route) {
         setSelectedRoute(route)

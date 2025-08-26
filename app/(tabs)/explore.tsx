@@ -1,14 +1,15 @@
-import {StyleSheet} from 'react-native';
-import {SafeAreaProvider, SafeAreaView} from "react-native-safe-area-context";
+import { StyleSheet } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useState } from "react";
 import Header from "@/components/Header";
 import TourBuilderHome from "@/screens/TourBuilderHome";
 import TourBuilder from "@/screens/TourBuilder";
+import {Tour} from "@/utilities/types";
 
 export default function TabTwoScreen() {
-    const [displayTourBuilderHome, setDisplayTourBuilderHome] = useState(true)
-    const [activeTour, setActiveTour] = useState(null)
-    const [displayMapBuilder, setDisplayMapBuilder] = useState(false)
+    const [displayTourBuilderHome, setDisplayTourBuilderHome] = useState<boolean>(true)
+    const [activeTour, setActiveTour] = useState<Tour | null>(null)
+    const [displayMapBuilder, setDisplayMapBuilder] = useState<boolean>(false)
 
     const openMapBuilderWithSelectedTour=(tour)=> {
         setActiveTour(tour)

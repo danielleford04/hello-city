@@ -1,6 +1,12 @@
 import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
+import {Stop} from "@/utilities/types";
 
-export default function StopInfoDisplay({stop, closeDisplayFunction}) {
+interface StopInfoDisplayProps {
+    stop: Stop;
+    closeDisplayFunction: ()=>void;
+}
+
+export default function StopInfoDisplay({stop, closeDisplayFunction}:StopInfoDisplayProps) {
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}>
