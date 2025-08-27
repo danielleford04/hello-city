@@ -36,20 +36,20 @@ export default function WalkMap({selectedWalk}:WalkMapProps) {
 
     useEffect(()=>{
         if (coordinates) {
-            checkLocationProximityToNewStops();
+            checkLocationProximityToUnvisitedWaypoints();
         }
     },[coordinates])
 
     useEffect(()=>{
         const waypointCoords: Coordinates[] = [];
-        for (let i=1; i<selectedWalk.stops.length-2; i++) {
-            waypointCoords.push({latitude: selectedWalk.stops[i].latitude, longitude: selectedWalk.stops[i].longitude})
+        for (let i=1; i<selectedWalk.waypoints.length-2; i++) {
+            waypointCoords.push({latitude: selectedWalk.waypoints[i].latitude, longitude: selectedWalk.waypoints[i].longitude})
         }
         setWaypointCoordinates(waypointCoords)
-        setWaypoints(selectedWalk.stops)
+        setWaypoints(selectedWalk.waypoints)
     },[selectedWalk])
 
-    function checkLocationProximityToNewStops() {
+    function checkLocationProximityToUnvisitedWaypoints() {
         if (waypoints && coordinates) {
             for (let i = 0; i < waypoints.length; i++) {
                 if (areTwoLocationsWithin500Feet(coordinates, {
