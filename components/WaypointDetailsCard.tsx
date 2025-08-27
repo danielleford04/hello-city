@@ -1,28 +1,28 @@
 import { StyleSheet, View, Text, Image, ScrollView, TouchableOpacity } from 'react-native';
-import {Stop} from "@/utilities/types";
+import { Waypoint } from "@/utilities/types";
 
-interface StopInfoDisplayProps {
-    stop: Stop;
-    closeDisplayFunction: ()=>void;
+interface WaypointDetailsCardProps {
+    waypoint: Waypoint;
+    closeFunction: ()=>void;
 }
 
-export default function StopInfoDisplay({stop, closeDisplayFunction}:StopInfoDisplayProps) {
+export default function WaypointDetailsCard({waypoint, closeFunction}:WaypointDetailsCardProps) {
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: 'center'}}>
                 <Text style={{fontSize: 24, marginTop: 10, fontFamily: "DMSansBold"}}>You've arrived at:</Text>
                 <Text style={styles.title}>{stop.name}</Text>
-                {stop.img &&
-                    <Image source={{uri: stop.img}}
+                {waypoint.img &&
+                    <Image source={{uri: waypoint.img}}
                            width={300}
                            height={200}
                            contentFit="contain"/>
                 }
                 <Text style={styles.description}>
-                    {stop.description}
+                    {waypoint.description}
                 </Text>
                 <TouchableOpacity
-                    onPress={closeDisplayFunction}
+                    onPress={closeFunction}
                     style={styles.closeButton}>
                     <Text>Return to Map</Text>
                 </TouchableOpacity>

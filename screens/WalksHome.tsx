@@ -1,27 +1,27 @@
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import Header from "@/components/Header";
-import RouteListItem from "@/components/RouteListItem";
-import {cbusRoute1, denverRoute1, denverRoute2} from "@/sampleRoute";
+import WalkListItem from "@/components/WalkListItem";
+import {cbusWalk1, denverWalk1, denverWalk2} from "@/exampleWalks";
 import {useEffect, useState} from "react";
 import {getCurrentPositionAsync, requestForegroundPermissionsAsync} from "expo-location";
-import { Coordinates, Tour } from "@/utilities/types";
+import { Coordinates, Walk } from "@/utilities/types";
 
-const defaultRoutes = [denverRoute1, cbusRoute1, denverRoute2]
+const defaultWalks = [denverWalk1, cbusWalk1, denverWalk2]
 
-interface ToursListProps {
-    setSelectedRoute: ()=>void;
+interface WalksHomeProps {
+    setSelectedWalk: (Walk)=>void;
 }
 
-export default function ToursList({setSelectedRoute} : ToursListProps) {
+export default function WalksHome({setSelectedWalk} : WalksHomeProps) {
     const [ coordinates, setCoordinates ] = useState<Coordinates | null>(null)
-    const [routes, setRoutes] = useState<Tour[] | null>(defaultRoutes)
+    const [walks, setWalks] = useState<Walk[] | null>(defaultWalks)
 
     useEffect(()=>{
         getUserCoordinates();
     },[])
 
     // TODO - when we have a backend, and the user comes to this component,
-    // it will get user's coordinates, and then fetch routes based
+    // it will get user's coordinates, and then fetch walks based
     // on proximity to their current location
     async function getUserCoordinates() {
         const { status } = await requestForegroundPermissionsAsync();
@@ -33,10 +33,6 @@ export default function ToursList({setSelectedRoute} : ToursListProps) {
             //TODO - error message - can't use app without permissions to get location
             setCoordinates({latitude: 48.85, longitude: 2.35})
         }
-    }
-
-    const selectRoute = function(route: Tour) {
-        console.log("we've selected a route, time to go to the map", route)
     }
 
     return (
@@ -53,10 +49,10 @@ export default function ToursList({setSelectedRoute} : ToursListProps) {
                     <Text style={styles.tabButtonText}>Search</Text>
                 </TouchableOpacity>
             </View>
-            <View style={styles.routeListContainer}>
-                {routes &&
-                    routes.map((route, index) => (
-                        <RouteListItem route={route} onPress={setSelectedRoute} key={route.id} />
+            <View style={styles.walkListContainer}>
+                {walks &&
+                    walks.map((walk, index) => (
+                        <WalkListItem walk={walk} onPress={setSelectedWalk} key={walk.id} />
                 ))}
             </View>
         </View>
@@ -82,7 +78,7 @@ const styles = StyleSheet.create({
         color: '#333333',
         fontFamily: "DMSansBold"
     },
-    routeListContainer: {
+    walkListContainer: {
         margin: 15
     }
 });

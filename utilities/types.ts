@@ -1,11 +1,11 @@
-export interface Tour {
+export interface Walk {
     id: string;
     name: string;
     description: string;
-    stops: Stop[],
+    waypoints: Waypoint[],
 }
 
-export interface Stop {
+export interface Waypoint {
     id: string;
     name: string;
     description: string;

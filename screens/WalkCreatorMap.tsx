@@ -6,30 +6,33 @@ import MapViewDirections from 'react-native-maps-directions';
 const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
 import GooglePlacesTextInput from 'react-native-google-places-textinput';
 import SimpleForm from "@/components/SimpleForm";
-import {Coordinates, Stop} from "@/utilities/types";
+import {Coordinates, Walk, Waypoint} from "@/utilities/types";
 import MapCalloutContent from "@/components/MapCalloutContent";
 
-export default function TourBuilder({activeTour}) {
+interface WalkCreatorMapProps {
+    activeWalk: Walk;
+}
+
+export default function WalkCreatorMap({activeWalk} : WalkCreatorMapProps) {
     const [initialCoordinates, setInitialCoordinates] = useState<Coordinates|null>(null)
-    const [stopsForTour, setStopsForTour] = useState<Stop[]>([])
-    const [newStopCoords, setNewStopCoords] = useState<Coordinates|null>(null)
-    const [displayNewStopDetailsForm, setDisplayNewStopDetailsForm] = useState<boolean>(false)
+    const [waypoints, setWaypoints] = useState<Waypoint[]>([])
+    const [newWaypointCoordinates, setNewWaypointCoordinates] = useState<Coordinates|null>(null)
+    const [displayNewWaypointForm, setDisplayNewWaypointForm] = useState<boolean>(false)
     const [waypointCoordinates, setWaypointCoordinates] = useState<Coordinates[]>([])
     const [mapHeight, setMapHeight] = useState<number | null>(null)
     const mapRef = useRef(null);
 
     useEffect(()=>{
-        if (activeTour.stops && activeTour.stops.length>0) {
-            setStopsForTour(activeTour.stops)
-            setInitialCoordinates({latitude: activeTour.stops[0].latitude, longitude: activeTour.stops[0].longitude})
+        if (activeWalk.waypoints && activeWalk.waypoints.length>0) {
+            setWaypoints(activeWalk.waypoints)
+            setInitialCoordinates({latitude: activeWalk.waypoints[0].latitude, longitude: activeWalk.waypoints[0].longitude})
         } else {
             getUserCoordinates();
         }
     },[])
 
-    console.log('active tour', activeTour)
-    console.log('stops for tour', stopsForTour)
-
+    console.log('active walk', activeWalk)
+    console.log('waypoints', waypoints)
 
     const handlePlaceSelect = (place) => {
         animateToNewRegion({latitude: place.details.location.latitude, longitude: place.details.location.longitude})
@@ -37,11 +40,11 @@ export default function TourBuilder({activeTour}) {
 
     useEffect(()=>{
         const waypointCoords = [];
-        for (let i=1; i<stopsForTour.length-1; i++) {
-            waypointCoords.push({latitude: stopsForTour[i].latitude, longitude: stopsForTour[i].longitude})
+        for (let i=1; i<waypoints.length-1; i++) {
+            waypointCoords.push({latitude: waypoints[i].latitude, longitude: waypoints[i].longitude})
         }
         setWaypointCoordinates(waypointCoords)
-    },[stopsForTour])
+    },[waypoints])
 
     async function getUserCoordinates() {
         const { status } = await requestForegroundPermissionsAsync();
@@ -59,21 +62,21 @@ export default function TourBuilder({activeTour}) {
         setMapHeight(height)
     }
 
-    function initiateCreateNewStop(e) {
+    function initiateCreateNewWaypoint(e) {
         const coords = { latitude: e.nativeEvent.coordinate.latitude, longitude: e.nativeEvent.coordinate.longitude }
-        setNewStopCoords(coords)
-        setDisplayNewStopDetailsForm(true)
+        setNewWaypointCoordinates(coords)
+        setDisplayNewWaypointForm(true)
     }
 
-    function addStopToRoute(formData: {name: string, description: string}) {
-        if (newStopCoords) {
-            setDisplayNewStopDetailsForm(false)
-            setStopsForTour([...stopsForTour, {
+    function addWaypointToWalk(formData: {name: string, description: string}) {
+        if (newWaypointCoordinates) {
+            setDisplayNewWaypointForm(false)
+            setWaypoints([...waypoints, {
                 name: formData.name,
                 description: formData.description,
                 id: 'randomId',
-                latitude: newStopCoords.latitude,
-                longitude: newStopCoords.longitude
+                latitude: newWaypointCoordinates.latitude,
+                longitude: newWaypointCoordinates.longitude
             }])
         }
     }
@@ -87,12 +90,13 @@ export default function TourBuilder({activeTour}) {
             mapRef.current.animateToRegion(newRegion, 1500); // 1.5 seconds animation
         }
     };
+
     return (
        <>
-           {!displayNewStopDetailsForm && initialCoordinates && mapHeight &&
+           {!displayNewWaypointForm && initialCoordinates && mapHeight &&
                 <View style={styles.mapContainer}>
-                    <Text style={styles.listTitle}>{activeTour.name}</Text>
-                    <Text style={{fontSize: 16, fontFamily: "Inter", color: '#333333', textAlign: "center", marginBottom: 10}}>To add a stop, long press the location</Text>
+                    <Text style={styles.listTitle}>{activeWalk.name}</Text>
+                    <Text style={styles.instructionText}>To add a waypoint, long press the map</Text>
                     <GooglePlacesTextInput
                         fetchDetails={true}
                         apiKey={GOOGLE_API_KEY}
@@ -110,26 +114,26 @@ export default function TourBuilder({activeTour}) {
                                 latitudeDelta: 0.00322,
                                 longitudeDelta: 0.00121,
                             }}
-                            onLongPress={(e)=>initiateCreateNewStop(e)}
+                            onLongPress={(e)=>initiateCreateNewWaypoint(e)}
                         >
-                            {stopsForTour.length>0 &&
-                                stopsForTour.map((marker, index) => (
+                            {waypoints.length>0 &&
+                                waypoints.map((marker, index) => (
                                     <Marker
                                         key={index}
                                         coordinate={{latitude: marker.latitude, longitude: marker.longitude}}
-                                        // onCalloutPress={()=>showLocationDetails(marker)} - TODO - function to edit stop
+                                        // onCalloutPress={()=>showLocationDetails(marker)} - TODO - function to edit waypoint
                                     >
                                         <Callout>
                                             <MapCalloutContent name={marker.name} description={marker.description}/>
                                         </Callout>
                                     </Marker>
                                 ))}
-                            {stopsForTour.length>1 &&
+                            {waypoints.length>1 &&
                                 <MapViewDirections
-                                    origin={{latitude: stopsForTour[0].latitude, longitude: stopsForTour[0].longitude}}
+                                    origin={{latitude: waypoints[0].latitude, longitude: waypoints[0].longitude}}
                                     destination={{
-                                        latitude: stopsForTour[stopsForTour.length - 1].latitude,
-                                        longitude: stopsForTour[stopsForTour.length - 1].longitude
+                                        latitude: waypoints[waypoints.length - 1].latitude,
+                                        longitude: waypoints[waypoints.length - 1].longitude
                                     }}
                                     mode="WALKING"
                                     apikey={GOOGLE_API_KEY}
@@ -140,8 +144,8 @@ export default function TourBuilder({activeTour}) {
                     </View>
                 </View>
             }
-            {displayNewStopDetailsForm &&
-                <SimpleForm title={"Add a Stop"} onSubmit={addStopToRoute} onCancel={()=>setDisplayNewStopDetailsForm(false)}/>
+            {displayNewWaypointForm &&
+                <SimpleForm title={"Add Waypoint"} onSubmit={addWaypointToWalk} onCancel={()=>setDisplayNewWaypointForm(false)}/>
             }
        </>
     );
@@ -159,4 +163,11 @@ const styles = StyleSheet.create({
         color: '#333333',
         textAlign: 'center'
     },
+    instructionText: {
+        fontSize: 16,
+        fontFamily: "Inter",
+        color: '#333333',
+        textAlign: "center",
+        marginBottom: 10
+    }
 });

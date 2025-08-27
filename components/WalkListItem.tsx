@@ -1,22 +1,22 @@
 import {StyleSheet, Text, TouchableOpacity} from 'react-native';
-import {Tour} from "@/utilities/types";
+import {Walk} from "@/utilities/types";
 
-interface RouteListItemProps {
-    route: Tour;
-    onPress: (Tour)=>void;
+interface WalkListItemProps {
+    walk: Walk;
+    onPress: (Walk)=>void;
 }
 
-export default function RouteListItem({route, onPress} : RouteListItemProps) {
+export default function WalkListItem({walk, onPress} : WalkListItemProps) {
     return (
         <TouchableOpacity
            style={styles.container}
-            onPress={()=>onPress(route)}
+            onPress={()=>onPress(walk)}
         >
             <Text style={styles.title}>
-                {route.name}
+                {walk.name}
             </Text>
             <Text style={styles.description}>
-                {route.description}
+                {walk.description}
             </Text>
         </TouchableOpacity>
     );

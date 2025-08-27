@@ -1,25 +1,21 @@
 import { StyleSheet } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { useState} from "react";
-import ToursList from "@/screens/ToursList";
-import TourMap from "@/screens/TourMap";
-import {Tour} from "@/utilities/types";
+import WalksHome from "@/screens/WalksHome";
+import WalkMap from "@/screens/WalkMap";
+import { Walk } from "@/utilities/types";
 
 export default function HomeScreen() {
-    const [selectedRoute, setSelectedRoute] = useState<Tour | null>(null)
-
-    const selectRoute = function(route) {
-        setSelectedRoute(route)
-    }
+    const [selectedWalk, setSelectedWalk] = useState<Walk | null>(null)
 
   return (
       <SafeAreaProvider>
           <SafeAreaView style={s.container}>
-              {!selectedRoute &&
-                  <ToursList setSelectedRoute={setSelectedRoute}/>
+              {!selectedWalk &&
+                  <WalksHome setSelectedWalk={setSelectedWalk}/>
               }
-              {selectedRoute &&
-                  <TourMap selectedRoute={selectedRoute}/>
+              {selectedWalk &&
+                  <WalkMap selectedWalk={selectedWalk}/>
           }
         </SafeAreaView>
       </SafeAreaProvider>

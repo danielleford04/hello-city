@@ -39,7 +39,8 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Allow React-Native-Weather to use your location."
         }
-      ]
+      ],
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
